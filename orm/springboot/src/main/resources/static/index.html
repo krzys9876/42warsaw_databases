@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head><title>DB Demo</title></head>
+<body>
+<h1>Spring Boot + JPA CRUD demo</h1>
+<div id="app"></div>
+
+<h2>report</h2>
+<button onclick="report('/report')">Report (Hibernate navigation)</button>
+<button onclick="report('/report_sql')">Report (JPQL query)</button>
+<table border="1" id="report-table"></table>
+
+<script>
+// report rows are plain JSON - columns are taken from the first row; a nested part is shown by its name
+async function report(url) {
+  const rows = await (await fetch(url)).json();
+  const table = document.getElementById("report-table");
+  table.innerHTML = "";
+  if (rows.length === 0) return;
+  const cols = Object.keys(rows[0]);
+  table.innerHTML = "<tr>" + cols.map(c => "<th>" + c + "</th>").join("") + "</tr>";
+  for (const row of rows) {
+    const tr = table.insertRow();
+    for (const c of cols) tr.insertCell().textContent = (row[c] && typeof row[c] === "object") ? row[c].name : row[c];
+  }
+}
+
+// resource name (= REST path under /api) -> editable fields
+const resources = {
+  parts:       ["name", "description", "quantityOnHand", "quantityOnOrder"],
+  projects:    ["name", "description"],
+  commitments: ["projectId", "partId", "quantity"]
+};
+
+async function load(res) {
+  const data = await (await fetch("/api/" + res)).json();
+  const rows = data._embedded[res];
+  const table = document.getElementById(res + "-table");
+  table.innerHTML = "<tr><th>id</th>" + resources[res].map(f => "<th>" + f + "</th>").join("") + "<th></th></tr>";
+  for (const row of rows) {
+    const tr = table.insertRow();
+    tr.insertCell().textContent = row.id;
+    for (const f of resources[res]) tr.insertCell().textContent = row[f];
+    const actions = tr.insertCell();
+    actions.append(button("Edit", () => edit(res, row)), button("Delete", () => remove(res, row.id)));
+  }
+}
+
+function edit(res, row) {
+  document.getElementById(res + "-id").value = row.id;
+  for (const f of resources[res]) document.getElementById(res + "-" + f).value = row[f];
+}
+
+async function save(res) {
+  const id = document.getElementById(res + "-id").value;
+  const body = {};
+  for (const f of resources[res]) body[f] = document.getElementById(res + "-" + f).value;
+  const response = await fetch("/api/" + res + (id ? "/" + id : ""), {
+    method: id ? "PUT" : "POST",                 // no id -> create, id -> update
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!response.ok) alert("Error: " + response.status + " " + await response.text());
+  clearForm(res);
+  load(res);
+}
+
+async function remove(res, id) {
+  const response = await fetch("/api/" + res + "/" + id, { method: "DELETE" });
+  if (!response.ok) alert("Error: " + response.status + " " + await response.text());
+  load(res);
+}
+
+function clearForm(res) {
+  document.getElementById(res + "-id").value = "";
+  for (const f of resources[res]) document.getElementById(res + "-" + f).value = "";
+}
+
+function button(label, onClick) {
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.onclick = onClick;
+  return b;
+}
+
+// build one section (table + form) per resource
+for (const res in resources) {
+  let html = "<h2>" + res + "</h2><table border='1' id='" + res + "-table'></table><p>";
+  html += "id: <input id='" + res + "-id' readonly size='4'> ";
+  for (const f of resources[res]) html += f + ": <input id='" + res + "-" + f + "'> ";
+  html += "</p>";
+  const section = document.createElement("div");
+  section.innerHTML = html;
+  section.append(button("Save", () => save(res)), button("Clear", () => clearForm(res)), button("Refresh", () => load(res)));
+  document.getElementById("app").append(section);
+  load(res);
+}
+</script>
+</body>
+</html>

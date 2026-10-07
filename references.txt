@@ -1,0 +1,20 @@
+01 - History of Databases (CMU Advanced Databases / Spring 2023)
+https://youtu.be/LWS8LEQAUVc?si=KlHPvLpCSzrdydy4
+
+The Database Wars: How Oracle Ruthlessly crushed iBM & took over MySQL
+https://youtu.be/nG5hYn93GQ8?si=VTVCxSywwpc4pCSZ
+
+History of Databases
+https://youtu.be/KG-mqHoXOXY?si=6LFaPkdy43lYLXUd
+
+The Rise of Oracle, SQL and the Relational Database
+https://youtu.be/zSn8il5Mo5s?si=cDuuqw50JfNsSJHF
+
+The Birth of SQL & the Relational Database
+https://youtu.be/z8L202FlmD4?si=4uhPWx14U5Dmf682
+
+60's IDS (GE/Honeywell)
+IMS - IBM for NASA (Apollo) and then commercialized
+
+Brief history of PostgreSQL
+https://www.postgresql.org/docs/current/history.html

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: dbdemo
+
+  datasource:
+    url: jdbc:postgresql://localhost:7432/postgres?currentSchema=public
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  data:
+    rest:
+      base-path: /api
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # create missing tables/columns, never drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+        default_batch_fetch_size: 5   # load lazy collections for many parents in one query (avoids N+1)
+    open-in-view: false
+
