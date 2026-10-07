@@ -36,3 +36,6 @@ https://youtu.be/zSn8il5Mo5s?si=73Yy-mcQg3nNg5PC
 
 Why Developers Hate Oracle and Still Use It
 https://youtu.be/lg8uMvrhmpc?si=XRb60hK4orwPoVGx
+
+Apache Spark Cluster Mode Overview
+https://spark.apache.org/docs/latest/cluster-overview.html

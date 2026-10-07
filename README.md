@@ -33,8 +33,8 @@ What's mot covered:
 
 ### How to escape SQL
 
-ORM in SpringBoot
-Apache Spark
+ORM in SpringBoot (with Java)
+Apache Spark (with Python)
 
 ### Databases at scale
 
