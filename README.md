@@ -12,10 +12,10 @@ becoming independent, adaptable professionals ready for any technical role.
 
 ### A brief history of databases 1962 - 1995
 
-Early databases: IDS, IDM
-Relational databases - the beginnings
-SQL and other languages
-The rise of mainstream databases
+- Early databases: IDS, IDM
+- Relational databases - the beginnings
+- SQL and other languages
+- The rise of mainstream databases
 
 ### SQL Fundamentals
 
@@ -33,8 +33,8 @@ What's mot covered:
 
 ### How to escape SQL
 
-ORM in SpringBoot (with Java)
-Apache Spark (with Python)
+- ORM in SpringBoot (with Java)
+- Apache Spark (with Python)
 
 ### Databases at scale
 
