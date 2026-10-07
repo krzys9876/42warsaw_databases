@@ -13,8 +13,26 @@ https://youtu.be/zSn8il5Mo5s?si=cDuuqw50JfNsSJHF
 The Birth of SQL & the Relational Database
 https://youtu.be/z8L202FlmD4?si=4uhPWx14U5Dmf682
 
-60's IDS (GE/Honeywell)
-IMS - IBM for NASA (Apollo) and then commercialized
-
 Brief history of PostgreSQL
 https://www.postgresql.org/docs/current/history.html
+
+Why Do Mainframes Still Exist? What's Inside One? 40TB, 200+ Cores, AI, and more!
+https://www.youtube.com/watch?v=ouAG4vXFORc
+
+A tribute to Codd
+https://www.cockroachlabs.com/blog/codd-tribute/
+
+SQUARE language (predecessor of SQL)
+https://dl.acm.org/doi/epdf/10.1145/361219.361221
+
+Fifty years of databases
+https://wp.sigmod.org/?p=688
+
+History of IMS: Beginnings at NASA
+https://www.ibm.com/docs/en/zos-basic-skills?topic=now-history-ims-beginnings-nasa
+
+The Rise of Oracle, SQL and the Relational Database
+https://youtu.be/zSn8il5Mo5s?si=73Yy-mcQg3nNg5PC
+
+Why Developers Hate Oracle and Still Use It
+https://youtu.be/lg8uMvrhmpc?si=XRb60hK4orwPoVGx
