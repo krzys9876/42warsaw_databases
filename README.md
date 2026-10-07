@@ -8,6 +8,38 @@ becoming independent, adaptable professionals ready for any technical role.
 
 (from school brochure)
 
+# Agenda
+
+### A brief history of databases 1962 - 1995
+
+Early databases: IDS, IDM
+Relational databases - the beginnings
+SQL and other languages
+The rise of mainstream databases
+
+### SQL Fundamentals
+
+What's covered:
+- Table creation
+- Data manipulation
+- Querying
+- Joins
+- Procedures and code
+
+What's mot covered:
+- Indexing
+- Partitioning
+- Transactions
+
+### How to escape SQL
+
+ORM in SpringBoot
+Apache Spark
+
+### Databases at scale
+
+A database landscape in Business Intelligence
+
 # Why databases
 
 Whatever code you write, at some point you must store and read the data your application uses. It may be a small set of configuration options, it may be bilions of rows. Over more than sixty years the industry have developed various pieces of software that try to solve this challenge - they all fall in to the database category.
@@ -41,3 +73,4 @@ Is it a remedy to all the problems? Certainly not, as always it comes with the c
 ## In practice
 
 Just like with the code, knowing the syntax, algorithms and build tools is not the same as working in a production environment with million-row codebase, in databases knowing SQL is not the same as handling hundreds of terabytes of data. You will see how it works at scale.
+
