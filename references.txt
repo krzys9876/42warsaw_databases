@@ -37,5 +37,11 @@ https://youtu.be/zSn8il5Mo5s?si=73Yy-mcQg3nNg5PC
 Why Developers Hate Oracle and Still Use It
 https://youtu.be/lg8uMvrhmpc?si=XRb60hK4orwPoVGx
 
+The Mind of Larry Ellison
+https://youtu.be/ew0WSS_zDH8?is=pIShpF4nT_jYEFDf
+
+What happened to NoSQL (Mongo)
+https://youtu.be/xnIxzBhBdbg?is=sMKZsRR2QdNp1Kn6
+
 Apache Spark Cluster Mode Overview
 https://spark.apache.org/docs/latest/cluster-overview.html
