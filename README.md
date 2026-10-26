@@ -26,10 +26,11 @@ What's covered:
 - Joins
 - Procedures and code
 
-What's mot covered:
+What's not covered:
 - Indexing
 - Partitioning
 - Transactions
+- Dynamic SQL and PL/SQL programming
 
 ### How to escape SQL
 
