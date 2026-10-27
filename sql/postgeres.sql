@@ -1,3 +1,4 @@
+-- Increase/decrease font: Cmd +/-
 -- Let's check connectivity
 select now();
 
@@ -8,6 +9,14 @@ select * from information_schema.tables where table_schema='public'
 drop table part cascade;
 drop table project cascade;
 drop table commit_part cascade;
+drop view q_eq_delta cascade;
+drop view q_eq_delta_sqrt cascade;
+drop view q_eq_res cascade;
+drop table q_eq cascade;
+
+drop table sb_part cascade;
+drop table sb_commit_part cascade;
+drop table sb_project cascade;
 
 -- Any questions about data types?
 -- https://www.postgresql.org/docs/current/datatype.html
@@ -159,7 +168,7 @@ order by p.part_id, pr.project_id;
 
 -- Alternative syntax (discouraged) - left joins are not supported this way
 select cp.part_id, p.part_name, p.part_description, cp.project_id, pr.project_name, pr.project_description, cp.quantity 
-from commit_part cp , part p, project pr
+from commit_part cp, part p, project pr
 where p.part_id = cp.part_id -- in Oracle you can left join by using (+): where p.part_id(+) = cp.part_id
 and pr.project_id = cp.project_id
 order by p.part_id, pr.project_id;
@@ -250,11 +259,14 @@ alter table commit_part add constraint low_quantity check (quantity<100);
 
 alter table commit_part add constraint positive_quantity check (quantity>0);
 
+insert into commit_part (part_id, project_id, quantity) values (3, 1, 12);
+
 -- Referential integrity - make sure all foreign IDs exist
 -- Attempt to insert non-existing IDs
 insert into commit_part (part_id, project_id, quantity) values (100,1000,5);
 
-select * from commit_part;
+select * from commit_part
+order by 2,3;
 
 delete from commit_part where part_id not in (select part_id from part);
 
@@ -289,11 +301,11 @@ begin
 end
 $$;
 
-select * 
+select *
 from q_eq
 order by 1;
 
--- We cant reuse formulas in SQL!
+-- We can't reuse formulas in SQL by default!
 select id, a, b, c, b*b-4*a*c as delta, case when delta>=0 then sqrt(delta) end as delta_sqrt
 from q_eq
 order by 1;
@@ -301,6 +313,22 @@ order by 1;
 -- NOTE: you can do it in SAS, you can do it (programatically) in Apache Spark, but not in old good standard SQL
 -- This requires rewriting queries in some form: CTE. select from (select from ...)) or creating views
 -- CTE - Common Table Expressions
+select * from (
+    select 
+        id, a, b, c, delta, delta_sqrt, 
+        case when delta_sqrt is not null and a!=0 then (-b-delta_sqrt)/(2*a) end as x1,
+        case when delta_sqrt is not null and a!=0 then (-b+delta_sqrt)/(2*a) end as x2
+    from (
+        select 
+            id, a, b, c, delta, case when delta>=0 then sqrt(delta) else null end as delta_sqrt 
+        from (
+            select 
+                id, a, b, c, b*b-4*a*c as delta
+            from q_eq
+        ) q1
+    ) q2
+) q3;
+
 with q1 as (
 select id, a, b, c, b*b-4*a*c as delta
 from q_eq
@@ -319,8 +347,12 @@ select * from q3;
 create view q_eq_delta as
 select *, b*b-4*a*c as delta from q_eq;
 
+select * from q_eq_delta;
+
 create view q_eq_delta_sqrt as
 select *, case when delta>=0 then sqrt(delta) else null end as delta_sqrt from q_eq_delta;
+
+select * from q_eq_delta_sqrt;
 
 create view q_eq_res as
 select *, 
@@ -399,6 +431,10 @@ from q_eq
 select version();
 
 -----------------------------------------
+drop table sb_part cascade;
+drop table sb_project cascade;
+drop table sb_commit_part cascade;
+
 select * from sb_part
 
 truncate table sb_part cascade;
@@ -468,3 +504,55 @@ select c1_0.part_id,c1_0.id,p2_0.id,p2_0.description,p2_0.name,c1_0.project_id,c
 select c1_0.part_id,c1_0.id,p2_0.id,p2_0.description,p2_0.name,c1_0.project_id,c1_0.quantity from sb_commit_part c1_0 left join sb_project p2_0 on p2_0.id=c1_0.project_id where c1_0.part_id = any ('{11,12,13,14,15}')
 
 select c1_0.part_id,c1_0.id,p2_0.id,p2_0.description,p2_0.name,c1_0.project_id,c1_0.quantity from sb_commit_part c1_0 left join sb_project p2_0 on p2_0.id=c1_0.project_id where c1_0.part_id = any ('{16,17,18,19,20}')
+
+-- P4 DataHub (Oracle)
+SELECT count(*) FROM all_tables WHERE owner NOT IN ('SYS','SYSTEM') AND owner LIKE 'DH%';
+
+SELECT count(*) FROM all_views WHERE owner NOT IN ('SYS','SYSTEM') AND owner LIKE 'DH%';
+
+SELECT round(sum(BYTES/1024/1024/1024)) Size_GB from SYS.DBA_DATA_FILES;
+
+SELECT * FROM dba_objects;
+
+SELECT object_type,count(*) FROM dba_objects 
+WHERE owner LIKE 'DH%'
+AND object_type IN ('FUNCTION','PROCEDURE','PACKAGE','TABLE','VIEW','INDEX')
+AND oracle_maintained='N'
+GROUP BY object_type ORDER BY 1;
+
+-- logical and physical CPUs
+select cpu_count_current, cpu_core_count_current from V$LICENSE;
+
+-- SGA - shared global area, PGA - program/process global area, total RAM under 1TB
+select decode( grouping(nm), 1, 'total', nm ) nm, round(sum(val/1024/1024)) mb
+FROM (
+   select 'sga' nm, sum(value) val
+   from v$sga
+   union all
+   select 'pga', sum(a.value)
+   from v$sesstat a, v$statname b
+   where b.name = 'session pga memory'
+   and a.statistic# = b.statistic#
+)
+group by rollup(nm);
+
+-- P4 DWH (Greenplum)
+-- 2 master nodes, 8 worker nodes with 24 primary instances + 24 mirror instances
+select * from gp_segment_configuration
+order by 1
+
+select 
+    hostname, 
+    case when hostname like '%gpm%' then 'master' else 'worker' end as host_type, 
+    case when datadir like '%master%' then 'master' when datadir like '%primary%' then 'primary' when datadir like '%mirror%' then 'mirror' end as node_type, 
+    count(*) as node_cnt from gp_segment_configuration
+group by 1,2,3
+order by 1,2,3
+
+SELECT
+    dfhostname, pg_size_pretty(SUM(dfspace)::bigint * 1024)
+FROM gp_toolkit.gp_disk_free
+group by 1
+order by 1
+
+-- CPU: 4 physical chips x 32 cores X 2 hyperthreads = 256 virtual CPUs per worker
