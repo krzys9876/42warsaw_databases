@@ -1,4 +1,3 @@
--- Increase/decrease font: Cmd +/-
 -- Let's check connectivity
 select now();
 
