@@ -504,54 +504,39 @@ select c1_0.part_id,c1_0.id,p2_0.id,p2_0.description,p2_0.name,c1_0.project_id,c
 
 select c1_0.part_id,c1_0.id,p2_0.id,p2_0.description,p2_0.name,c1_0.project_id,c1_0.quantity from sb_commit_part c1_0 left join sb_project p2_0 on p2_0.id=c1_0.project_id where c1_0.part_id = any ('{16,17,18,19,20}')
 
--- P4 DataHub (Oracle)
-SELECT count(*) FROM all_tables WHERE owner NOT IN ('SYS','SYSTEM') AND owner LIKE 'DH%';
+-- Dynamic SQL
+do $$
+declare
+    i int4;
+    t text;
+    q text;
+begin
+    for i in 1..10
+    loop
+        t:='tmp_table_' || i;
+        raise notice 'creating table: %', t;
+        q:='create table '|| t ||' (id int8, name varchar(100))';
+        raise notice 'SQL to be executed: %',q;
+        execute q;
+    end loop;
+end 
+$$;
 
-SELECT count(*) FROM all_views WHERE owner NOT IN ('SYS','SYSTEM') AND owner LIKE 'DH%';
+select table_name from information_schema.tables where table_schema='public' and table_name like 'tmp_table%';
 
-SELECT round(sum(BYTES/1024/1024/1024)) Size_GB from SYS.DBA_DATA_FILES;
+select * from tmp_table_4;
 
-SELECT * FROM dba_objects;
-
-SELECT object_type,count(*) FROM dba_objects 
-WHERE owner LIKE 'DH%'
-AND object_type IN ('FUNCTION','PROCEDURE','PACKAGE','TABLE','VIEW','INDEX')
-AND oracle_maintained='N'
-GROUP BY object_type ORDER BY 1;
-
--- logical and physical CPUs
-select cpu_count_current, cpu_core_count_current from V$LICENSE;
-
--- SGA - shared global area, PGA - program/process global area, total RAM under 1TB
-select decode( grouping(nm), 1, 'total', nm ) nm, round(sum(val/1024/1024)) mb
-FROM (
-   select 'sga' nm, sum(value) val
-   from v$sga
-   union all
-   select 'pga', sum(a.value)
-   from v$sesstat a, v$statname b
-   where b.name = 'session pga memory'
-   and a.statistic# = b.statistic#
-)
-group by rollup(nm);
-
--- P4 DWH (Greenplum)
--- 2 master nodes, 8 worker nodes with 24 primary instances + 24 mirror instances
-select * from gp_segment_configuration
-order by 1
-
-select 
-    hostname, 
-    case when hostname like '%gpm%' then 'master' else 'worker' end as host_type, 
-    case when datadir like '%master%' then 'master' when datadir like '%primary%' then 'primary' when datadir like '%mirror%' then 'mirror' end as node_type, 
-    count(*) as node_cnt from gp_segment_configuration
-group by 1,2,3
-order by 1,2,3
-
-SELECT
-    dfhostname, pg_size_pretty(SUM(dfspace)::bigint * 1024)
-FROM gp_toolkit.gp_disk_free
-group by 1
-order by 1
-
--- CPU: 4 physical chips x 32 cores X 2 hyperthreads = 256 virtual CPUs per worker
+do $$
+declare
+    t text;
+    q text;
+begin
+    for t in select table_name from information_schema.tables where table_schema='public' and table_name like 'tmp_table%'
+    loop
+        raise notice 'dropping table: %', t;
+        q:='drop table '|| t;
+        raise notice 'SQL to be executed: %',q;
+        execute q;
+    end loop;
+end 
+$$;
