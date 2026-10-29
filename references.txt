@@ -45,3 +45,9 @@ https://youtu.be/xnIxzBhBdbg?is=sMKZsRR2QdNp1Kn6
 
 Apache Spark Cluster Mode Overview
 https://spark.apache.org/docs/latest/cluster-overview.html
+
+Hibernate: Myths & Over-Engineering. ORMs vs SQL vs Hexagonal — Gavin King | The Marco Show
+https://www.youtube.com/watch?v=Qvh3VFlvJnE
+
+Michael Stonebraker 2014 ACM A.M. Turing Award Lecture
+https://www.youtube.com/watch?v=BbGeKi6T6QI&t=3523s
