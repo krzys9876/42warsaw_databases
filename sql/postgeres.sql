@@ -429,6 +429,45 @@ from q_eq
 
 select version();
 
+
+-- Dynamic SQL
+do $$
+declare
+    i int4;
+    t text;
+    q text;
+begin
+    for i in 1..10
+    loop
+        t:='tmp_table_' || i;
+        raise notice 'creating table: %', t;
+        q:='create table '|| t ||' (id int8, name varchar(100))';
+        raise notice 'SQL to be executed: %',q;
+        execute q;
+    end loop;
+end 
+$$;
+
+select table_name from information_schema.tables where table_schema='public' and table_name like 'tmp_table%';
+
+select * from tmp_table_4;
+
+do $$
+declare
+    t text;
+    q text;
+begin
+    for t in select table_name from information_schema.tables where table_schema='public' and table_name like 'tmp_table%'
+    loop
+        raise notice 'dropping table: %', t;
+        q:='drop table '|| t;
+        raise notice 'SQL to be executed: %',q;
+        execute q;
+    end loop;
+end 
+$$;
+
+
 -----------------------------------------
 drop table sb_part cascade;
 drop table sb_project cascade;
@@ -504,39 +543,3 @@ select c1_0.part_id,c1_0.id,p2_0.id,p2_0.description,p2_0.name,c1_0.project_id,c
 
 select c1_0.part_id,c1_0.id,p2_0.id,p2_0.description,p2_0.name,c1_0.project_id,c1_0.quantity from sb_commit_part c1_0 left join sb_project p2_0 on p2_0.id=c1_0.project_id where c1_0.part_id = any ('{16,17,18,19,20}')
 
--- Dynamic SQL
-do $$
-declare
-    i int4;
-    t text;
-    q text;
-begin
-    for i in 1..10
-    loop
-        t:='tmp_table_' || i;
-        raise notice 'creating table: %', t;
-        q:='create table '|| t ||' (id int8, name varchar(100))';
-        raise notice 'SQL to be executed: %',q;
-        execute q;
-    end loop;
-end 
-$$;
-
-select table_name from information_schema.tables where table_schema='public' and table_name like 'tmp_table%';
-
-select * from tmp_table_4;
-
-do $$
-declare
-    t text;
-    q text;
-begin
-    for t in select table_name from information_schema.tables where table_schema='public' and table_name like 'tmp_table%'
-    loop
-        raise notice 'dropping table: %', t;
-        q:='drop table '|| t;
-        raise notice 'SQL to be executed: %',q;
-        execute q;
-    end loop;
-end 
-$$;
